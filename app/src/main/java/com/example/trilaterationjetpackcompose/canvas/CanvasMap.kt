@@ -24,11 +24,12 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.trilaterationjetpackcompose.util.BeaconLibrary.Beacon
 
 val TAG = "MAP"
 
 @Composable
-fun CanvasMap(result: String) {
+fun CanvasMap(result: List<BeaconData>) {
     var point by remember { mutableStateOf(Pair(0f, 0f)) }
     var maxCanvasW = 0f
     var maxCanvasH = 0f
@@ -119,6 +120,12 @@ fun CanvasMap(result: String) {
         Button(onClick = { point = Pair((Math.random()*maxCanvasW).toFloat(), (Math.random()*maxCanvasH).toFloat()) }) {
             Text("Mi ubicación")
         }
+        val beaconInfo = result.joinToString(separator = "\n") { beacon ->
+            "UUID: ${beacon.uuid}, Distance: ${beacon.distance}"
+        }
+
+        // Muestra la información de los Beacons en un Text composable
+        Text(text = beaconInfo)
     }
 
 }

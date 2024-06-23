@@ -7,16 +7,19 @@ import android.bluetooth.BluetoothManager
 import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanResult
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.getSystemService
 import com.example.projecto_suarez.util.BeaconLibrary.Utils
+import com.example.trilaterationjetpackcompose.canvas.BeaconData
 import com.example.trilaterationjetpackcompose.util.BeaconLibrary.Beacon
 import com.example.trilaterationjetpackcompose.util.BeaconLibrary.BleScanCallback
 import com.example.trilaterationjetpackcompose.util.Constants
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 
 class BeaconScanner(private val context: Context) {
@@ -26,12 +29,11 @@ class BeaconScanner(private val context: Context) {
     private lateinit var bluetoothAdapter: BluetoothAdapter
     private var btScanner: BluetoothLeScanner? = null;
     var beaconSet: HashMap<String,Beacon> = HashMap()
-    private val _resultBeacons = MutableStateFlow("No beacons Detected")
-    val resultBeacons: StateFlow<String> = _resultBeacons
+    private val _beaconsFlow = MutableStateFlow<List<BeaconData>>(emptyList())
+    val resultBeacons =  _beaconsFlow.asStateFlow()
 
 
     fun initBluetooth() {
-
         bluetoothManager = getSystemService(context,BluetoothManager::class.java)!!
         bluetoothAdapter = bluetoothManager.adapter
 
@@ -118,6 +120,13 @@ class BeaconScanner(private val context: Context) {
                     beacon.rssi?.let { it1 -> beacounInSet?.calculateDistance(txPower = txPower, rssi = it1) }
 
                     Log.e(TAG, "iBeaconUUID:$iBeaconUUID major:$major minor:$minor rssi:${beacon?.rssi} distance ${beacounInSet?.movingAverageFilter?.lastDistance}" )
+
+                    _beaconsFlow.value = beaconSet.values.toList().map { BeaconData(it.uuid!!,
+                        it.movingAverageFilter.lastDistance.toString()
+                    ) }
+
+
+
                 }
 
             }

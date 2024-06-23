@@ -17,9 +17,8 @@ class Beacon(mac: String?) {
     var namespace: String? = null
     var instance: String? = null
     var rssi: Int? = null
-
-     val movingAverageFilter = MovingAverageFilter(5)
-
+    var lastDistance: Int? = null
+    var movingAverageFilter = MovingAverageFilter(5)
 
     fun calculateDistance(txPower: Int, rssi: Int): Double? {
         return movingAverageFilter.calculateDistance(txPower, rssi);
@@ -40,6 +39,8 @@ class Beacon(mac: String?) {
     override fun toString(): String {
         return "Beacon(macAddress=$macAddress, manufacturer=$manufacturer, type=$type, uuid=$uuid, major=$major, minor=$minor, rssi=$rssi)"
     }
+
+
 
 
 }
