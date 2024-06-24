@@ -12,6 +12,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -25,11 +26,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 val TAG = "MAP"
-var point = Pair(0f, 0f)
 
 @Composable
 fun CanvasMap(result: List<BeaconData>) {
-    val _point by remember { mutableStateOf(point) }
+    var _point by remember { mutableStateOf(Pair(0f, 0f)) }
 
     var maxCanvasW = 0f.dp
     var maxCanvasH = 0f.dp
@@ -86,7 +86,7 @@ fun CanvasMap(result: List<BeaconData>) {
                     style = Stroke(width = 5.dp.toPx())
                 )
 
-                point?.let { (x, y) ->
+                _point?.let { (x, y) ->
                     drawPoint(x, y, Color.Red)
                 }
             }
@@ -95,7 +95,7 @@ fun CanvasMap(result: List<BeaconData>) {
             picture(3, maxCanvasW*.6f, maxCanvasH*.1f, maxCanvasW, maxCanvasH)
             picture(4, maxCanvasW*.8f, maxCanvasH*.1f, maxCanvasW, maxCanvasH)
         }
-        Button(onClick = { randomPoint(maxCanvasWPx, maxCanvasHPx) }) {
+        Button(onClick = { _point = randomPoint(maxCanvasWPx, maxCanvasHPx) }) {
             Text("Mi ubicación")
         }
         val beaconInfo = result.joinToString(separator = "\n") { beacon ->
@@ -134,6 +134,6 @@ fun picture(ID: Int, x: Dp, y: Dp, w: Dp, h: Dp) {
     }
 }
 
-fun randomPoint(maxW: Float, maxH: Float){
-    point = Pair((Math.random()*maxW).toFloat(), (Math.random()*maxH).toFloat())
+fun randomPoint(maxW: Float, maxH: Float): Pair<Float, Float> {
+    return Pair((Math.random()*maxW).toFloat(), (Math.random()*maxH).toFloat())
 }
