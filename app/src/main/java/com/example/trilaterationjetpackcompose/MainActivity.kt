@@ -132,8 +132,10 @@ class MainActivity : ComponentActivity() {
                     ) {
                         val viewModel: BeaconViewModel = hiltViewModel()
                         val result = viewModel.result.value
+                        val ubi = viewModel.ubi.value
                         CanvasMap(
                             result = result,
+                            ubi = ubi,
                         )
                     }
                     if (shouldShowPermissionRationale) {
