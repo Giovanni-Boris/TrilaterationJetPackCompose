@@ -24,16 +24,19 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlin.math.abs
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 val TAG = "MAP"
 
 @Composable
-fun CanvasMap(result: List<BeaconData>) {
+fun CanvasMap(result: List<BeaconData>, ubi: Pair<Float, Float>) {
     var _point by remember { mutableStateOf(Pair(0f, 0f)) }
 
     var maxCanvasW = 0f.dp
     var maxCanvasH = 0f.dp
-    var mToDp: Float
+    var mToDp = 0f
 
     //metros
     var maxRoomWidth = 100f
@@ -41,6 +44,9 @@ fun CanvasMap(result: List<BeaconData>) {
 
     var maxCanvasWPx = 0f
     var maxCanvasHPx = 0f
+
+    //metros
+    var distancesArr = arrayOf(71.49, 79.48, 44.55)
 
     Column {
         BoxWithConstraints(modifier = Modifier
@@ -87,7 +93,9 @@ fun CanvasMap(result: List<BeaconData>) {
                 )
 
                 _point?.let { (x, y) ->
-                    drawPoint(x, y, Color.Red)
+                    _point = convertPoint(ubi, mToDp)
+                    Log.d(TAG, "UBI (dp): $_point")
+                    drawPoint(x.dp.toPx(), (maxCanvasH - y.dp).toPx(), Color.Blue)
                 }
             }
             picture(1, maxCanvasW*.1f, maxCanvasH*.1f, maxCanvasW, maxCanvasH)
@@ -95,11 +103,13 @@ fun CanvasMap(result: List<BeaconData>) {
             picture(3, maxCanvasW*.6f, maxCanvasH*.1f, maxCanvasW, maxCanvasH)
             picture(4, maxCanvasW*.8f, maxCanvasH*.1f, maxCanvasW, maxCanvasH)
         }
-        Button(onClick = { _point = randomPoint(maxCanvasWPx, maxCanvasHPx) }) {
+        Button(onClick = { _point = convertPoint(ubi, mToDp) }) {
             Text("Mi ubicación")
         }
+        //distances = arrayOf(result[0].distance.toDouble(), result[1].distance.toDouble(), result[2].distance.toDouble())
+
         val beaconInfo = result.joinToString(separator = "\n") { beacon ->
-            "UUID: ${beacon.uuid}, Distance: ${beacon.distance}"
+            "UUID: ${beacon.uuid}\nDistance: ${beacon.distance}\nMinor: ${beacon.minor}"
         }
 
         // Muestra la información de los Beacons en un Text composable
@@ -136,4 +146,17 @@ fun picture(ID: Int, x: Dp, y: Dp, w: Dp, h: Dp) {
 
 fun randomPoint(maxW: Float, maxH: Float): Pair<Float, Float> {
     return Pair((Math.random()*maxW).toFloat(), (Math.random()*maxH).toFloat())
+}
+
+// Función para calcular la distancia euclidiana entre dos puntos en coordenadas cartesianas
+fun euclideanDistance(p1: Pair<Double, Double>, p2: Pair<Double, Double>): Double {
+    val dx = p1.first - p2.first
+    val dy = p1.second - p2.second
+    return sqrt(dx * dx + dy * dy)
+}
+
+fun convertPoint(p: Pair<Float, Float>, c: Float): Pair<Float, Float>{
+    var res = Pair(p.first*c, p.second*c)
+    Log.d(TAG, "$res")
+    return res
 }

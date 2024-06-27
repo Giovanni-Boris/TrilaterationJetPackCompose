@@ -32,6 +32,7 @@ class BeaconScanner(private val context: Context) {
     private val _beaconsFlow = MutableStateFlow<List<BeaconData>>(emptyList())
     val resultBeacons =  _beaconsFlow.asStateFlow()
 
+    val UUID_default = "46ca9f8463e64f2aaea77c72f4826baf"
 
     fun initBluetooth() {
         bluetoothManager = getSystemService(context,BluetoothManager::class.java)!!
@@ -100,6 +101,11 @@ class BeaconScanner(private val context: Context) {
                 val iBeaconManufactureData = scanRecord.getManufacturerSpecificData(0X004c)
                 if (iBeaconManufactureData != null && iBeaconManufactureData.size >= 23) {
                     val iBeaconUUID = Utils.toHexString(iBeaconManufactureData.copyOfRange(2, 18))
+                    Log.d(TAG, iBeaconUUID)
+
+                    if (iBeaconUUID != UUID_default)
+                        return@let
+
                     val major = Integer.parseInt(Utils.toHexString(iBeaconManufactureData.copyOfRange(18, 20)), 16)
                     val minor = Integer.parseInt(Utils.toHexString(iBeaconManufactureData.copyOfRange(20, 22)), 16)
                     val txPower = Integer.parseInt(
@@ -111,22 +117,21 @@ class BeaconScanner(private val context: Context) {
                     beacon.major = major
                     beacon.minor = minor
 
-                    if(!beaconSet.containsKey(beacon.macAddress)){
-                        beacon.macAddress?.let { it1 -> beaconSet.put(it1, beacon) }
+                    val key = "${beacon.uuid}${beacon.minor}${beacon.major}"
+
+                    if(!beaconSet.containsKey(key)){
+                        beaconSet.put(key, beacon)
                     }
 
-                    val beacounInSet = beaconSet.get(beacon.macAddress)
+                    val beacounInSet = beaconSet.get(key)
 
                     beacon.rssi?.let { it1 -> beacounInSet?.calculateDistance(txPower = txPower, rssi = it1) }
 
                     Log.e(TAG, "iBeaconUUID:$iBeaconUUID major:$major minor:$minor rssi:${beacon?.rssi} distance ${beacounInSet?.movingAverageFilter?.lastDistance}" )
 
                     _beaconsFlow.value = beaconSet.values.toList().map { BeaconData(it.uuid!!,
-                        it.movingAverageFilter.lastDistance.toString()
+                        it.movingAverageFilter.lastDistance.toFloat(), beacon.minor!!
                     ) }
-
-
-
                 }
 
             }
