@@ -130,7 +130,7 @@ class BeaconScanner(private val context: Context) {
                     Log.e(TAG, "iBeaconUUID:$iBeaconUUID major:$major minor:$minor rssi:${beacon?.rssi} distance ${beacounInSet?.movingAverageFilter?.lastDistance}" )
 
                     _beaconsFlow.value = beaconSet.values.toList().map { BeaconData(it.uuid!!,
-                        it.movingAverageFilter.lastDistance.toFloat(), beacon.minor!!
+                        it.movingAverageFilter.lastDistance.toFloat(), it.minor!!
                     ) }
                 }
 

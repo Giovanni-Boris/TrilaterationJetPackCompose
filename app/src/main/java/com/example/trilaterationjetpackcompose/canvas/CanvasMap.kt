@@ -39,8 +39,8 @@ fun CanvasMap(result: List<BeaconData>, ubi: Pair<Float, Float>) {
     var mToDp = 0f
 
     //metros
-    var maxRoomWidth = 100f
-    var maxRoomHeight = 100f
+    var maxRoomWidth = 7f
+    var maxRoomHeight = 7f
 
     var maxCanvasWPx = 0f
     var maxCanvasHPx = 0f
@@ -157,6 +157,6 @@ fun euclideanDistance(p1: Pair<Double, Double>, p2: Pair<Double, Double>): Doubl
 
 fun convertPoint(p: Pair<Float, Float>, c: Float): Pair<Float, Float>{
     var res = Pair(p.first*c, p.second*c)
-    Log.d(TAG, "$res")
+    Log.d(TAG, "$p")
     return res
 }

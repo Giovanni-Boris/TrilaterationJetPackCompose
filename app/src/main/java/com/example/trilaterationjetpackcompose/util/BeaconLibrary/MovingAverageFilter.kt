@@ -8,8 +8,8 @@ class MovingAverageFilter(private val size: Int) {
     private val TAG = "MovingAverageFilter";
     var lastDistance : Double = 0.0;
     fun calculateDistance(txPower:Int, rssi: Int): Double {
-        val measuredPower = -69;
-        val factor = (measuredPower - rssi) / (10 * 2.0)
+        val measuredPower = -65;
+        val factor = (measuredPower - rssi) / (10 * 3.2)
         val distance = Math.pow(10.0, factor)
         var movingAverage = distance
 

@@ -27,7 +27,7 @@ class BeaconViewModel @Inject constructor(
     private var _ubi = mutableStateOf(Pair(0f, 0f))
     val ubi: State<Pair<Float, Float>> = _ubi
 
-    var beaconPositions = arrayOf(Pair(0.0, 0.0), Pair(100.0, 100.0), Pair(100.0, 0.0))
+    var beaconPositions = arrayOf(Pair(0.0, 0.0), Pair(6.0, 6.0), Pair(6.0, 0.0))
 
     init {
         beaconScanner.initBluetooth()
